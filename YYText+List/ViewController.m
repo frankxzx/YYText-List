@@ -7,8 +7,14 @@
 //
 
 #import "ViewController.h"
+#import "YYTextView+list.h"
 
-@interface ViewController ()
+@interface ViewController () <YYTextViewDelegate> {
+    YYTextView *textView;
+    UIButton *dismissButton;
+    UIButton *numberButton;
+    UIButton *bulletButton;
+}
 
 @end
 
@@ -16,14 +22,52 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
+    textView = [YYTextView new];
+    textView.delegate = self;
+    dismissButton = [[UIButton alloc]init];
+    [dismissButton setTitle:@"dismiss" forState:UIControlStateNormal];
+    [dismissButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [dismissButton addTarget:self action:@selector(dismiss:) forControlEvents:UIControlEventTouchUpInside];
+    [textView addSubview:dismissButton];
+    [self.view addSubview:textView];
+    numberButton = [[UIButton alloc]init];
+    [numberButton setTitle:@"number" forState:UIControlStateNormal];
+    [numberButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [numberButton addTarget:self action:@selector(listNumberAction:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:numberButton];
+    bulletButton = [[UIButton alloc]init];
+    [bulletButton setTitle:@"bullet" forState:UIControlStateNormal];
+    [bulletButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [bulletButton addTarget:self action:@selector(listBulletAction:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:bulletButton];
 }
 
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    CGSize size = [UIScreen mainScreen].bounds.size;
+    textView.frame = CGRectMake(0, 20, size.width, size.height - 100);
+    bulletButton.frame = CGRectMake(0, size.height - 80, 80, 80);
+    numberButton.frame = CGRectMake(80, size.height - 80, 80, 80);
+    dismissButton.frame = CGRectMake(200, 60, 50, 44);
 }
 
+- (void)listNumberAction:(id)sender {
+    [textView insertPrefix:YYTextListNumber];
+}
+
+- (void)listBulletAction:(id)sender {
+    [textView insertPrefix:YYTextListBullet];
+}
+
+- (void)dismiss:(id)sender {
+    [textView endEditing:YES];
+}
+
+-(BOOL)textView:(YYTextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
+    if ([text isEqualToString:@"\n"]) {
+        [textView inheritedFormLastParagraph];
+    }
+    return YES;
+}
 
 @end
