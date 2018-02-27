@@ -15,6 +15,7 @@
     UIButton *dismissButton;
     UIButton *numberButton;
     UIButton *bulletButton;
+    UIButton *cancelListButton;
 }
 
 @end
@@ -41,6 +42,11 @@
     [bulletButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [bulletButton addTarget:self action:@selector(listBulletAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:bulletButton];
+    cancelListButton = [[UIButton alloc]init];
+    [cancelListButton setTitle:@"cancel" forState:UIControlStateNormal];
+    [cancelListButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [cancelListButton addTarget:self action:@selector(listCancelAction:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:cancelListButton];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -49,6 +55,7 @@
     textView.frame = CGRectMake(0, 20, size.width, size.height - 100);
     bulletButton.frame = CGRectMake(0, size.height - 80, 80, 80);
     numberButton.frame = CGRectMake(80, size.height - 80, 80, 80);
+    cancelListButton.frame = CGRectMake(160, size.height - 80, 80, 80);
     dismissButton.frame = CGRectMake(200, 60, 50, 44);
 }
 
@@ -58,6 +65,10 @@
 
 - (void)listBulletAction:(id)sender {
     [textView insertPrefix:YYTextListBullet isNewParagraph:NO];
+}
+
+- (void)listCancelAction:(id)sender {
+    [textView insertPrefix:YYTextListNone isNewParagraph:NO];
 }
 
 - (void)dismiss:(id)sender {

@@ -37,6 +37,7 @@ NSString *const kBulletString = @"\u2022 ";
             [text replaceCharactersInRange:NSMakeRange(headOfParagraph, oldPrefixItem.prefix.length) withString:prefixItem.prefix];
         } else {
         //添加前缀
+            if (type == YYTextListNone) { return; }
             [text yy_insertString:prefixItem.prefix atIndex:headOfParagraph];
         }
     }
@@ -47,10 +48,9 @@ NSString *const kBulletString = @"\u2022 ";
     [text yy_setAttribute:YYTextListAttributedName value:prefixItem range:newParagraphRange];
     self.attributedText = text;
     //记录光标位置
-    __block NSInteger lastCurPosition = self.selectedRange.location;
     dispatch_async(dispatch_get_main_queue(), ^{
-        lastCurPosition += self.selectedRange.length;
-        self.selectedTextRange = [YYTextRange rangeWithRange:NSMakeRange(lastCurPosition, 0)];
+        NSInteger location = newParagraphRange.location + newParagraphRange.length - 1;
+        self.selectedTextRange = [YYTextRange rangeWithRange:NSMakeRange(location, 0)];
     });
 }
 
@@ -93,15 +93,20 @@ NS_INLINE BOOL NSContainRange(NSRange range1, NSRange range2) {
     
     NSArray *paragraphRanges = [self.attributedText.string paragraphRanges];
     __block NSInteger lastParagraphIdx = 0;
-    [paragraphRanges enumerateObjectsUsingBlock:^(NSValue *obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        NSRange paragraphRange = obj.rangeValue;
-        if (paragraphRange.location != NSNotFound) {
-            if (NSContainRange(self.selectedRange, paragraphRange)) {
-                lastParagraphIdx = idx;
-                *stop = YES;
+    
+    if (NSMaxRange(self.attributedText.yy_rangeOfAll) == NSMaxRange(self.selectedRange)) {
+        lastParagraphIdx = paragraphRanges.count - 1;
+    } else {
+        [paragraphRanges enumerateObjectsUsingBlock:^(NSValue *obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            NSRange paragraphRange = obj.rangeValue;
+            if (paragraphRange.location != NSNotFound) {
+                if (NSContainRange(self.selectedRange, paragraphRange)) {
+                    lastParagraphIdx = idx-1;
+                    *stop = YES;
+                }
             }
-        }
-    }];
+        }];
+    }
     
     //NSInteger idx = lastParagraphIdx - 1 >= 0 ?: 0;
     NSRange lastParagraphRange = [[self.attributedText.string paragraphRanges]objectAtIndex:lastParagraphIdx].rangeValue;
@@ -124,7 +129,7 @@ NS_INLINE BOOL NSContainRange(NSRange range1, NSRange range2) {
             break;
 
         case YYTextListNumber:
-            one = [YYTextListPrefixItem listWithPrefix:[NSString stringWithFormat:@"%ld ", (long)prefixCount] indent:kBulletListIndent range:range prefixCount:prefixCount];
+            one = [YYTextListPrefixItem listWithPrefix:[NSString stringWithFormat:@"%ld. ", (long)prefixCount] indent:kBulletListIndent range:range prefixCount:prefixCount];
             break;
        
         case YYTextListNone:
