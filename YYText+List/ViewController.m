@@ -7,10 +7,11 @@
 //
 
 #import "ViewController.h"
+#import "QSRichTextView.h"
 #import "YYTextView+list.h"
 
-@interface ViewController () <YYTextViewDelegate> {
-    YYTextView *textView;
+@interface ViewController () <QSRichTextViewDelegate> {
+    QSRichTextView *textView;
     UIButton *dismissButton;
     UIButton *numberButton;
     UIButton *bulletButton;
@@ -22,8 +23,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    textView = [YYTextView new];
-    textView.delegate = self;
+    textView = [QSRichTextView new];
+    textView.qs_delegate = self;
     dismissButton = [[UIButton alloc]init];
     [dismissButton setTitle:@"dismiss" forState:UIControlStateNormal];
     [dismissButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
@@ -52,22 +53,19 @@
 }
 
 - (void)listNumberAction:(id)sender {
-    [textView insertPrefix:YYTextListNumber];
+    [textView insertPrefix:YYTextListNumber isNewParagraph:NO];
 }
 
 - (void)listBulletAction:(id)sender {
-    [textView insertPrefix:YYTextListBullet];
+    [textView insertPrefix:YYTextListBullet isNewParagraph:NO];
 }
 
 - (void)dismiss:(id)sender {
     [textView endEditing:YES];
 }
 
--(BOOL)textView:(YYTextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
-    if ([text isEqualToString:@"\n"]) {
-        [textView inheritedFormLastParagraph];
-    }
-    return YES;
+-(void)qsRichTextViewDidEnterNewLine {
+    [textView inheritedFormLastParagraph];
 }
 
 @end

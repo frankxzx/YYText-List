@@ -114,7 +114,7 @@ typedef NS_ENUM(NSUInteger, YYTextMoveDirection) {
     UIImageView *_placeHolderView;
     
     NSMutableAttributedString *_innerText; ///< nonnull, inner attributed text
-    NSMutableAttributedString *_delectedText; ///< detected text for display
+    NSMutableAttributedString *_delectedText; ///< detected text for displayinh
     YYTextContainer *_innerContainer; ///< nonnull, inner text container
     YYTextLayout *_innerLayout; ///< inner text layout, the text in this layout is longer than `_innerText` by appending '\n'
     

@@ -7,7 +7,7 @@
 //
 
 #import "YYTextView+list.h"
-#import <objc/runtime.h>
+#import "NSString+list.h"
 
 CGFloat const kNumerListIndent = 15.0f;
 CGFloat const kBulletListIndent = 10.0f;
@@ -16,7 +16,7 @@ NSString *const kBulletString = @"\u2022 ";
 
 @implementation YYTextView (list)
 
--(void)insertPrefix:(YYTextListType)type {
+-(void)insertPrefix:(YYTextListType)type isNewParagraph:(BOOL)isNewParagraph {
     if (self.selectedRange.location == NSNotFound) { return; }
     //光标所在的当前段落
     NSRange paragraphRange = [self.attributedText.string paragraphRangeForRange:self.selectedRange];
@@ -25,23 +25,20 @@ NSString *const kBulletString = @"\u2022 ";
     YYTextListPrefixItem *prefixItem = [YYTextListPrefixItem listWithPrefixType:type range:NSMakeRange(headOfParagraph, 0) prefixCount:lastParagrahPrefix+1];
     NSMutableAttributedString *paragraphString = [[NSMutableAttributedString alloc]initWithAttributedString:[self.attributedText attributedSubstringFromRange:paragraphRange]];
     
-    //替换前缀
     NSMutableAttributedString *text = [[NSMutableAttributedString alloc]initWithAttributedString:self.attributedText];
     YYTextListPrefixItem *oldPrefixItem = paragraphString.yy_attributes[YYTextListAttributedName];
-    if (oldPrefixItem) {
-        if (oldPrefixItem.type == type) { return; }
-        [text replaceCharactersInRange:NSMakeRange(headOfParagraph, oldPrefixItem.prefix.length) withString:prefixItem.prefix];
-    } else {
-    //添加前缀
+    
+    if (isNewParagraph) {
+        //换行添加前缀
         [text yy_insertString:prefixItem.prefix atIndex:headOfParagraph];
-//        [self setSelectedRange:NSMakeRange(headOfParagraph, 0)];
-        //记录光标位置
-        __block NSInteger lastCurPosition = self.selectedRange.location;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            lastCurPosition += self.selectedRange.length;
-            self.selectedTextRange = [YYTextRange rangeWithRange:NSMakeRange(lastCurPosition, 0)];
-//            [self scrollRangeToVisible:selectRange];
-        });
+    } else {
+        //替换前缀
+        if (oldPrefixItem) {
+            [text replaceCharactersInRange:NSMakeRange(headOfParagraph, oldPrefixItem.prefix.length) withString:prefixItem.prefix];
+        } else {
+        //添加前缀
+            [text yy_insertString:prefixItem.prefix atIndex:headOfParagraph];
+        }
     }
     
     text.yy_headIndent = prefixItem.indent;
@@ -49,12 +46,18 @@ NSString *const kBulletString = @"\u2022 ";
     NSRange newParagraphRange = [self.attributedText.string paragraphRangeForRange:NSMakeRange(headOfParagraph, 0)];
     [text yy_setAttribute:YYTextListAttributedName value:prefixItem range:newParagraphRange];
     self.attributedText = text;
+    //记录光标位置
+    __block NSInteger lastCurPosition = self.selectedRange.location;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        lastCurPosition += self.selectedRange.length;
+        self.selectedTextRange = [YYTextRange rangeWithRange:NSMakeRange(lastCurPosition, 0)];
+    });
 }
 
 -(void)inheritedFormLastParagraph {
     YYTextListType listType = [self lastParagraphListType];
     if (listType != YYTextListNone) {
-        [self insertPrefix:listType];
+        [self insertPrefix:listType isNewParagraph:YES];
     }
 }
 
@@ -80,10 +83,29 @@ NSString *const kBulletString = @"\u2022 ";
     return n;
 }
 
+NS_INLINE BOOL NSContainRange(NSRange range1, NSRange range2) {
+    BOOL isInside = NSLocationInRange(range1.location, range2) && NSLocationInRange(NSMaxRange(range1), range2);
+    BOOL isEqual = NSEqualRanges(range1, range2);
+    return isInside || isEqual;
+}
+
 -(YYTextListType)lastParagraphListType {
-    //光标所在的当前段落
-    NSRange paragraphRange = [self.attributedText.string paragraphRangeForRange:self.selectedRange];
-    YYTextListPrefixItem *prefixItem = [self.attributedText yy_attribute:YYTextListAttributedName atIndex:paragraphRange.location+1];
+    
+    NSArray *paragraphRanges = [self.attributedText.string paragraphRanges];
+    __block NSInteger lastParagraphIdx = 0;
+    [paragraphRanges enumerateObjectsUsingBlock:^(NSValue *obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSRange paragraphRange = obj.rangeValue;
+        if (paragraphRange.location != NSNotFound) {
+            if (NSContainRange(self.selectedRange, paragraphRange)) {
+                lastParagraphIdx = idx;
+                *stop = YES;
+            }
+        }
+    }];
+    
+    //NSInteger idx = lastParagraphIdx - 1 >= 0 ?: 0;
+    NSRange lastParagraphRange = [[self.attributedText.string paragraphRanges]objectAtIndex:lastParagraphIdx].rangeValue;
+    YYTextListPrefixItem *prefixItem = [self.attributedText yy_attribute:YYTextListAttributedName atIndex:lastParagraphRange.location];
     if (prefixItem) {
         return prefixItem.type;
     }
@@ -95,18 +117,21 @@ NSString *const kBulletString = @"\u2022 ";
 @implementation YYTextListPrefixItem
 
 + (instancetype)listWithPrefixType:(YYTextListType)type range:(NSRange)range prefixCount:(NSInteger)prefixCount {
-    YYTextListPrefixItem *one = [self new];
-    one.type = type;
+    YYTextListPrefixItem *one;
     switch (type) {
         case YYTextListBullet:
-            return [YYTextListPrefixItem listWithPrefix:kBulletString indent:kBulletListIndent range:range prefixCount:prefixCount];
+            one = [YYTextListPrefixItem listWithPrefix:kBulletString indent:kBulletListIndent range:range prefixCount:prefixCount];
+            break;
 
         case YYTextListNumber:
-            return [YYTextListPrefixItem listWithPrefix:[NSString stringWithFormat:@"%ld ", (long)prefixCount] indent:kBulletListIndent range:range prefixCount:prefixCount];
+            one = [YYTextListPrefixItem listWithPrefix:[NSString stringWithFormat:@"%ld ", (long)prefixCount] indent:kBulletListIndent range:range prefixCount:prefixCount];
+            break;
        
         case YYTextListNone:
-            return [YYTextListPrefixItem listWithPrefix:@"" indent:0 range:NSMakeRange(NSNotFound, NSNotFound) prefixCount:NSNotFound];
+            one = [YYTextListPrefixItem listWithPrefix:@"" indent:0 range:NSMakeRange(NSNotFound, NSNotFound) prefixCount:NSNotFound];
+            break;
     }
+    one.type = type;
     return one;
 }
 

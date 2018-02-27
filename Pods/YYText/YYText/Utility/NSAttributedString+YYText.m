@@ -1390,6 +1390,7 @@ return style. _attr_;
                  (id)kCTRunDelegateAttributeName,
                  YYTextBackedStringAttributeName,
                  YYTextBindingAttributeName,
+                 @"YYTextListAttributed",
                  YYTextAttachmentAttributeName].mutableCopy;
         if (kiOS8Later) {
             [keys addObject:(id)kCTRubyAnnotationAttributeName];

@@ -18,7 +18,7 @@ typedef NS_ENUM(NSUInteger, YYTextListType) {
 
 @interface YYTextView (list)
 
--(void)insertPrefix:(YYTextListType)type;
+-(void)insertPrefix:(YYTextListType)type isNewParagraph:(BOOL)isNewParagraph;
 -(void)inheritedFormLastParagraph;
 
 @end

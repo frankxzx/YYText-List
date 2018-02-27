@@ -14,6 +14,8 @@
 		0133E0B22036972700D781BD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0133E0B02036972700D781BD /* LaunchScreen.storyboard */; };
 		0133E0B52036972700D781BD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0133E0B42036972700D781BD /* main.m */; };
 		01352BAF2043A68600C115A1 /* YYTextView+list.m in Sources */ = {isa = PBXBuildFile; fileRef = 01352BAE2043A68600C115A1 /* YYTextView+list.m */; };
+		013875FD2044F40300467136 /* QSRichTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 013875FC2044F40300467136 /* QSRichTextView.m */; };
+		01860143204522F100401960 /* NSString+list.m in Sources */ = {isa = PBXBuildFile; fileRef = 01860142204522F100401960 /* NSString+list.m */; };
 		84381883B36E047BFBF1EAB4 /* libPods-YYText+List.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EA37898364D44CD97E26607 /* libPods-YYText+List.a */; };
 /* End PBXBuildFile section */
 
@@ -30,6 +32,10 @@
 		0133E0B42036972700D781BD /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		01352BAD2043A68600C115A1 /* YYTextView+list.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YYTextView+list.h"; sourceTree = "<group>"; };
 		01352BAE2043A68600C115A1 /* YYTextView+list.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "YYTextView+list.m"; sourceTree = "<group>"; };
+		013875FB2044F40300467136 /* QSRichTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QSRichTextView.h; sourceTree = "<group>"; };
+		013875FC2044F40300467136 /* QSRichTextView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QSRichTextView.m; sourceTree = "<group>"; };
+		01860141204522F100401960 /* NSString+list.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSString+list.h"; sourceTree = "<group>"; };
+		01860142204522F100401960 /* NSString+list.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSString+list.m"; sourceTree = "<group>"; };
 		9EA37898364D44CD97E26607 /* libPods-YYText+List.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-YYText+List.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C590E961C760C22F95F5DEA8 /* Pods-YYText+List.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YYText+List.release.xcconfig"; path = "Pods/Target Support Files/Pods-YYText+List/Pods-YYText+List.release.xcconfig"; sourceTree = "<group>"; };
 		C7DD482E4C748EB9E8FFCB45 /* Pods-YYText+List.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YYText+List.debug.xcconfig"; path = "Pods/Target Support Files/Pods-YYText+List/Pods-YYText+List.debug.xcconfig"; sourceTree = "<group>"; };
@@ -74,6 +80,10 @@
 				0133E0A92036972700D781BD /* ViewController.m */,
 				01352BAD2043A68600C115A1 /* YYTextView+list.h */,
 				01352BAE2043A68600C115A1 /* YYTextView+list.m */,
+				01860141204522F100401960 /* NSString+list.h */,
+				01860142204522F100401960 /* NSString+list.m */,
+				013875FB2044F40300467136 /* QSRichTextView.h */,
+				013875FC2044F40300467136 /* QSRichTextView.m */,
 				0133E0AB2036972700D781BD /* Main.storyboard */,
 				0133E0AE2036972700D781BD /* Assets.xcassets */,
 				0133E0B02036972700D781BD /* LaunchScreen.storyboard */,
@@ -226,9 +236,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				0133E0AA2036972700D781BD /* ViewController.m in Sources */,
+				01860143204522F100401960 /* NSString+list.m in Sources */,
 				01352BAF2043A68600C115A1 /* YYTextView+list.m in Sources */,
 				0133E0B52036972700D781BD /* main.m in Sources */,
 				0133E0A72036972700D781BD /* AppDelegate.m in Sources */,
+				013875FD2044F40300467136 /* QSRichTextView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
