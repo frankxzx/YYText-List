@@ -12,7 +12,7 @@
 CGFloat const kNumerListIndent = 15.0f;
 CGFloat const kBulletListIndent = 10.0f;
 NSString *const YYTextListAttributedName = @"YYTextListAttributed";
-NSString *const kBulletString = @"\u2022 ";
+NSString *const kBulletString = @"\u2022";
 
 @implementation YYTextView (list)
 
@@ -34,6 +34,7 @@ NSString *const kBulletString = @"\u2022 ";
     } else {
         //替换前缀
         if (oldPrefixItem) {
+            if (oldPrefixItem.type == prefixItem.type  &&  prefixItem.type == YYTextListNone ) { return; }
             [text replaceCharactersInRange:NSMakeRange(headOfParagraph, oldPrefixItem.prefix.length) withString:prefixItem.prefix];
         } else {
         //添加前缀
@@ -125,7 +126,7 @@ NS_INLINE BOOL NSContainRange(NSRange range1, NSRange range2) {
     YYTextListPrefixItem *one;
     switch (type) {
         case YYTextListBullet:
-            one = [YYTextListPrefixItem listWithPrefix:kBulletString indent:kBulletListIndent range:range prefixCount:prefixCount];
+            one = [YYTextListPrefixItem listWithPrefix:[NSString stringWithFormat:@"%@ ", kBulletString] indent:kBulletListIndent range:range prefixCount:prefixCount];
             break;
 
         case YYTextListNumber:
